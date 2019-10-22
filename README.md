@@ -1,35 +1,28 @@
-# Meta Mouse
+# Meta Mouse 🐭
 
 ## WIP 
 
-### Path to v.0.0.2
+<img src="https://i.imgur.com/qTi2EbG.png">
 
-- Create Structure
+### Working
+
+- save username list from sfdx
+  - select to set current
+    - selected is saved for next run
+- refresh list
+- package pull for objects
+
+### Path
 
   - / -- root
 
-    - /xml/ - where to put package.xml files
+    - /packages/ - where to put package.xml files
 
-    - /data/
+    - /data/ - Structure for deploying, cloning orgs / solutions, etc
       - /raw/ -- where retrieve pulls zips to
       - /all/ -- where raw is unzipped to
       - /stage/ -- where fails go to know whats left, what to try again later, etc
       - /deploy/ -- where deploy deploys from
 
-  - [index.js](index.js) -- this is main app
-    - routes -- modules to call as paths get worked out
 
   - [worksheeet.txt](worksheeet.txt) -- where to put common problems that arise during deployments to find commonalities
-
-    - use to build common cleaning util: cleaner.js
-
-- List alias / usernames from sfdx
-
-  - choose FROM / TO usernames
-
-- retrieve FROM
-
-  - via /xml/package.xml
-    - to raw
-
-- unzip raw to all

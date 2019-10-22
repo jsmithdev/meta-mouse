@@ -1,1 +1,9 @@
+node_modules
 .history
+
+*.zip
+raw/*
+objects
+todo.js
+config.json
+router.js

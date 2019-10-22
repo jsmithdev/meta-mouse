@@ -1,0 +1,50 @@
+Things that cannot be deployed via any version of mdapi
+------------------------------------------------------------------
+(From: asagarwal.com/metadata-components-that-needs-to-be-manually-deployed-in-salesforce/)
+Account Teams
+Activity Button Overrides
+Analytic Settings
+Auto-number on Customizable Standard Fields
+Campaign Influences
+Case Contact Roles
+Case Feed Layouts
+Case Team Roles
+Console Layouts
+Currency Exchange Rates
+Data Category Visibility Settings
+Delegated Administration
+Divisions
+Email Services
+Fiscal Year
+HTML Document and Attachment Settings
+Lead Settings
+Mail Merge Templates
+Mobile Administration
+Mobile Users and Devices
+Offline Briefcase Configurations
+Opportunity Big Deal Alerts
+Opportunity Update Reminders
+Organization Wide Email Addresses
+Partner Management
+Predefined Case Teams
+Product Schedule Setup
+Public and Resource Calendars
+Quote Templates
+Salesforce to Salesforce
+Standard fields except for Picklist and Lookup fields
+Search Settings
+Self-Service Portal Font and Colors
+Self-Service Portal Settings
+Self-Service Portal Users
+Self-Service Public Solutions
+Self-Service Web-to-Case
+Sharing Organization Wide Defaults
+Site.com
+Social Account/Contact Settings
+Solution Categories
+Solution Settings
+Tag Settings
+Territory Assignment Rules
+User Interface Settings (except calendar features, which are supported in ActivitiesSettings)
+Web Links on Person Account Page Layouts
+Web-to-Lead

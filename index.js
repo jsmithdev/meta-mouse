@@ -62,6 +62,13 @@ async function main(){
     else if(answer.task === 'Select Username'){
 
         const hasUsers = app.get('usernames')
+
+        if(!hasUsers || !hasUsers.length){
+
+            console.log(` 
+            there were no users to select from so i'll run 'refresh list' 🐭 
+            `);
+        }
         
         const usernames = hasUsers ? app.get('usernames') : await SFDX.getUsers()
 

@@ -1,7 +1,7 @@
 {
   "name": "meta-mouse",
-  "version": "0.0.3",
-  "description": "WIP/POC CLI tool for Salesforce metadata",
+  "version": "0.0.4",
+  "description": "WIP CLI tool for Salesforce metadata",
   "main": "index.js",
   "scripts": {
     ".": "npm run start",
@@ -24,6 +24,6 @@
     "shell-path": "^2.1.0"
   },
   "bin": {
-    "metamouse": "./index.js"
+    "metamouse": "./cli.js"
   }
 }

@@ -1,6 +1,4 @@
-process.env.SFDX_JSON_TO_STDOUT = true
 
-const router = require('./scripts/router')
 const inquirer = require('inquirer')
 const Store = require('data-store')
 const SFDX = require('./scripts/sfdx')

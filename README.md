@@ -1,16 +1,33 @@
 # Meta Mouse 🐭
 
-## WIP 
+## Work in progress salesforce cli tool
+
+if want to test , you can install
+
+```bash
+  npm i -g meta-mouse
+```
+
+then run metamouse 
+
+
+```bash
+  metamouse
+```
+
 
 <img src="https://i.imgur.com/qTi2EbG.png">
 
 ### Working
 
-- save username list from sfdx
-  - select to set current
-    - selected is saved for next run
-- refresh list
+- refresh list of usernames from sfdx & cache list
+- select username to set current & cache username
+- open org in browser (use saved/cached username)
+  
 - package pull for objects
+
+WIP below
+---
 
 ### Path
 
@@ -18,11 +35,10 @@
 
     - /packages/ - where to put package.xml files
 
-    - /data/ - Structure for deploying, cloning orgs / solutions, etc
+    - /data/ - Structure for deploying, pulls, solution templates, etc
       - /raw/ -- where retrieve pulls zips to
       - /all/ -- where raw is unzipped to
       - /stage/ -- where fails go to know whats left, what to try again later, etc
       - /deploy/ -- where deploy deploys from
 
-
-  - [worksheeet.txt](worksheeet.txt) -- where to put common problems that arise during deployments to find commonalities
+  - [worksheet.txt](worksheet.txt) -- where to put common problems that arise during deployments to find commonalities

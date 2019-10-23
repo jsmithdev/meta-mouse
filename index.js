@@ -79,7 +79,12 @@ async function main(){
 
         console.log(answer.username)
         app.set('username', answer.username)
-        hasSelectedUser(app)
+
+        console.log(`
+        username set & cached 🐭 
+        `)
+
+        main()
     }
     else if(answer.task === 'Refresh Usernames'){
         
@@ -106,6 +111,10 @@ async function main(){
     else if(answer.task === 'Open in Browser'){
 
         await SFDX.openInBrowser(app.get('username'))
+
+        console.log(`
+        opened in browser 🐭 
+        `)
 
         main()
     }

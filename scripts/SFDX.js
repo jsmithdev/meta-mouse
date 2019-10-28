@@ -21,6 +21,7 @@ const { unzip_package } = require('./Utility')
 
 
 module.exports = {
+    addUser,
     getUsers,
     describeMeta,
     openInBrowser,
@@ -301,5 +302,25 @@ function mdapi_retrieve (username, xml_path, dest){
                 }
             })
         })
+    })
+}
+
+
+/**
+ * @description sfdx mdapi retrieve 
+ * 
+ * @params {String} url to use; login || test
+ */
+function addUser (url){
+
+    return new Promise(resolve => {
+        
+        const cmd = `sfdx force:auth:web:login -r ${url} `
+        
+        const command = exec_normal(cmd)
+
+        command.stdout.pipe(process.stdout)
+        command.stderr.pipe(process.stderr)
+        command.on('exit', resolve)
     })
 }

@@ -35,7 +35,8 @@ async function main(app){
 
     const choices = [
         'Select Username', 
-        'See Saved Username', 
+        'Add Username', 
+        'See Cached Username', 
         'Refresh Usernames', 
         'Open in Browser',
         'Validation Rule Count',
@@ -99,13 +100,26 @@ async function main(app){
         app.set('usernames', usernames)
 
         if(usernames.length === 0){
-            console.log(`
-            Uh-oh! 🐭 
-            No usernames returned from sfdx
-            Please add a user to sfdx
-            `)
+            console.log(`\n No usernames returned from sfdx. Please use 'Add a User' 🐭 \n`)
         }
-          
+    }
+    else if(answer.task === 'Add Username'){
+
+        const question = [{
+            choices: ['Test Org', 'Prod or Dev Org'],
+            name: 'url',
+            message: `What type of org do you want to add 🐭 `,
+            type: 'list'
+        }]
+
+        const answer = await inquirer.prompt(question)
+
+        const url = answer.url.includes('Test') ? 'https://test.salesforce.com' : 'https://login.salesforce.com'
+        
+        await SFDX.addUser(url)
+
+        console.dir( '\n' )
+        
     }
     else if(answer.task === 'Validation Rule Count'){
 

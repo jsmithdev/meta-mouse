@@ -1,11 +1,17 @@
+const util = require('util')
 const exec = require('child_process').exec
-const SFDX = require('./sfdx')
+const prom_exec = util.promisify( exec )
+
+const checks = require('./utils/checks')
+const { unzip_package } = require('./utils/storage')
 
 module.exports = {
     createApp,
     execute,
     restart,
-    fatal
+    fatal,
+    checks,
+    unzip_package,
 }
 
 function createApp(app){
@@ -22,22 +28,24 @@ function createApp(app){
     return app
 }
 
+function capitalize(s){
+    return `${s.charAt(0).toUpperCase()}${s.substring(1, s.length)}`
+}
+
 async function start(app){
 
     const username = app.get('user') 
 
     return username
         ? username 
-        : await execute({
-            cmd: 'whoami', 
-            cwd: __dirname, 
-            responder: stout => handleUser(stout, app)
-        })
+        : handleUser( await prom_exec('whoami'), app )
 }
 
-function handleUser(raw, app){
+function handleUser( { stdout } , app ){
+
+    console.dir(stdout)
     
-    const name = raw.replace(/'Undefined'/gi, '').replace('\\n', '')
+    const name = capitalize( stdout.replace('\n', '').trim() )
 
     app.set('user', name) 
 
@@ -47,32 +55,17 @@ function handleUser(raw, app){
 function fatal(e, app){
 
     const msg = typeof e === 'object' ? JSON.stringify(e) : e
-    console.log(`🐭 fatal error, restarting \n  
-            Error: ${msg}
-    `)
-    restart(app.user, app)
+    console.log(`\n fatal error, restarting 🐭 \n  Error: ${msg} \n`)
+    restart(app)
 }
 function restart(app){
-    app.start(app.user)
+    app.start(app)
 }
 
 function execute(fig){//, cwd, responder, exit
-
-    /* 
-    const fig = {
-        cmd: `sfdx force:org -h`, 
-        cwd: `${__dirname}`,
-        responder: console.log,
-        exit: console.info,
-        error: console.error
-    }
-    */
    
     const { cmd, cwd, responder, exit, error } = fig
 
-	//console.log('Exec on behalf of user')
-    //console.log(`${cmd} ${cwd}`)
-   
 	const command = exec(cmd, { cwd })
 
 	command.stdout.on('data', data => responder ? responder(data.toString()) : console.log('no responder'))

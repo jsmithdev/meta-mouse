@@ -7,3 +7,8 @@ objects
 todo.js
 config.json
 router.js
+scrap.js
+store.json
+
+tmp
+packages/package_objects_custom.xml

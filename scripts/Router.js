@@ -8,7 +8,6 @@ module.exports = {
 
     init,
     main,
-
 }
 
 
@@ -20,10 +19,6 @@ async function init(app){
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     \n`);
 
-    await Utility.createApp( app )
-
-    await app.start(app)
-
     main(app)
 }
 
@@ -31,35 +26,14 @@ async function init(app){
 
 async function main(app){
 
-    const user = app.get('user')
-
-    const choices = [
-        'Select Username', 
-        'Add Username', 
-        'See Cached Username', 
-        'Refresh Usernames', 
-        'Open in Browser',
-        'Validation Rule Count',
-        'Quit',
-        //'Set FROM org', 
-        //'Set to ORG', 
-        //'Make package.xml',
-    ];
-
-    const question = [{
-        choices,
-        name: 'task',
-        message: `Hey ${user}, what would you like to do? 🐭 `,
-        type: 'list'
-    }]
-
+    const question = Utility.questions.main
 
     const answer = await inquirer.prompt(question)
 
-
-    if(answer.task === 'See Saved Username'){
+    if(answer.task === 'See Cached Username'){
         
         const username = app.get('username')
+
         console.log( `\n I have ${username} cached as selected 🐭 \n `)
 
     }
@@ -75,7 +49,7 @@ async function main(app){
         
         const usernames = ['<- Go Back', ...app.get('usernames')]
 
-        if(usernames.length === 1){ console.log(`Still no users to choose from. Consider adding some to sdfx  🐭 `)}
+        if(usernames.length === 1){ console.log(`Still no users to choose from. Consider adding some to SFDX  🐭 `)}
         
         const question = [{
             choices: usernames,
@@ -123,11 +97,8 @@ async function main(app){
     }
     else if(answer.task === 'Validation Rule Count'){
 
-        const response = await validationRuleCount(app)
+        await validationRuleCount(app)
             
-        console.log('\n')
-        console.log(response)
-        console.log('\n')
     }
     else if(answer.task === 'Open in Browser'){
 
@@ -145,7 +116,6 @@ async function main(app){
         return console.log(`\n later 🐭 \n`)
     }
 
-    
     main(app)
 }
 
@@ -179,6 +149,10 @@ async function validationRuleCount(app){
 
     const response = await SFDX.validationRuleCount(username, type)
 
+    console.log('\n')
+    console.log(response)
+    console.log('\n')
+    
     return response
 }
 

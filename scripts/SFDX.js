@@ -324,3 +324,16 @@ function addUser (url){
         command.on('exit', resolve)
     })
 }
+
+/*
+
+"pullData": "sfdx force:data:tree:export -u username -d trees -q ",
+"pushData": "sfdx force:data:tree:import -u username -f ",
+
+"genSOQL": "node index.js",
+
+"pullMeta":"sfdx force:mdapi:retrieve -u username -k package.xml -r src",
+"pushMeta": "sfdx force:mdapi:deploy -d src -w -1 --ignoreerrors -g -l NoTestRun -u username ",
+
+
+*/

@@ -23,10 +23,10 @@ then run metamouse
 - refresh list of usernames from sfdx & cache list
 - select username to set current & cache username
 - open org in browser (use saved/cached username)
-  
-- package pull for objects
+- add username to sfdx
+- some success w/ validation count
 
-WIP below
+WIP below / disregard for now
 ---
 
 ### Path

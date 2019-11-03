@@ -13,5 +13,11 @@ module.exports = {
         //'Make package.xml',
     ],
 
+    objects: [
+        '<- Go Back',
+        'Standard Objects',
+        'Custom Objects',
+        'All Objects'
+    ],
 
 }

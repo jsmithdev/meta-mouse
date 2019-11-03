@@ -1,5 +1,7 @@
 
 const inquirer = require('inquirer')
+inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'))
+
 const SFDX = require('./SFDX')
 const Utility = require('./Utility')
 
@@ -13,11 +15,7 @@ module.exports = {
 
 async function init(app){
 
-    console.log(`\n /\\/\\eta /\\/\\ouse 
-         _______________________________________
-    🐭  < i use sfdx to preform metadata tasks 🧀 )
-         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    \n`);
+    Utility.art()
 
     main(app)
 }
@@ -26,17 +24,16 @@ async function init(app){
 
 async function main(app){
 
-    const question = Utility.questions.main
+    const answer = await inquirer.prompt( Utility.questions.main )
 
-    const answer = await inquirer.prompt(question)
-
+    /* GET USER */
     if(answer.task === 'See Cached Username'){
         
         const username = app.get('username')
 
         console.log( `\n I have ${username} cached as selected 🐭 \n `)
-
     }
+    /* SET USER */
     else if(answer.task === 'Select Username'){
 
         const check = users => Utility.checks.usernames( users )
@@ -51,14 +48,15 @@ async function main(app){
 
         if(usernames.length === 1){ console.log(`Still no users to choose from. Consider adding some to SFDX  🐭 `)}
         
-        const question = [{
-            choices: usernames,
-            name: 'username',
-            message: `Select username 🐭 `,
-            type: 'list'
-        }]
 
-        const answer = await inquirer.prompt(question)
+        const answer = await inquirer.prompt([{
+            name: 'username',
+            message: 'Select username 🐭 ',
+            type: 'autocomplete',
+            pageSize: 10,
+            source: (answers, input) => Utility.search(answers, input, usernames)
+        }])
+
 
         if(answer.username.includes('Go Back')){ return main(app) }
 
@@ -67,6 +65,7 @@ async function main(app){
         console.log(` \n username ${answer.username} set & cached 🐭 \n`)
 
     }
+    /* GET USERNAMES */
     else if(answer.task === 'Refresh Usernames'){
         
         const usernames = await SFDX.getUsers()
@@ -77,6 +76,7 @@ async function main(app){
             console.log(`\n No usernames returned from sfdx. Please use 'Add a User' 🐭 \n`)
         }
     }
+    /* ADD USER */
     else if(answer.task === 'Add Username'){
 
         const question = [{
@@ -91,15 +91,14 @@ async function main(app){
         const url = answer.url.includes('Test') ? 'https://test.salesforce.com' : 'https://login.salesforce.com'
         
         await SFDX.addUser(url)
-
-        console.dir( '\n' )
-        
     }
+    /* RULE COUNT */
     else if(answer.task === 'Validation Rule Count'){
 
         await validationRuleCount(app)
             
     }
+    /* OPEN ORG */
     else if(answer.task === 'Open in Browser'){
 
         const username = app.get('username')
@@ -111,10 +110,13 @@ async function main(app){
         console.log(`\n opened in browser 🐭 \n`)
 
     }
+    /* EXIT */
     else if(answer.task === 'Quit'){
         
         return console.log(`\n later 🐭 \n`)
     }
+    /* TESTING */
+    else if(answer.task === 'Test'){}
 
     main(app)
 }
@@ -125,33 +127,17 @@ async function validationRuleCount(app){
 
     if(!username){ noUsername(app) }
 
-    const choices = [
-        '<- Go Back',
-        'Standard Objects',
-        'Custom Objects',
-        'All Objects'
-    ];
-
-    const question = [{
-        choices,
-        name: 'action',
-        message: `What kind of objects to include? 🐭 `,
-        type: 'list'
-    }]
-
-    const answer = await inquirer.prompt(question)
+    const answer = await inquirer.prompt( Utility.questions.objects )
     
-    if(answer.action === '<- Go Back'){ return main(app) }
+    if(answer.type === '<- Go Back'){ return main(app) }
 
-    const type = answer.action
-        .substring(0, answer.action.indexOf(' '))
+    const type = answer.type
+        .substring(0, answer.type.indexOf(' '))
         .toLowerCase()
 
     const response = await SFDX.validationRuleCount(username, type)
 
-    console.log('\n')
-    console.log(response)
-    console.log('\n')
+    console.log(`\n ${response} \n`)
     
     return response
 }

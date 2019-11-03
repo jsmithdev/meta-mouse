@@ -2,25 +2,34 @@
 
 ## Work in progress salesforce cli tool
 
-if want to test , you can install
+
+### Requirements
+
+`sfdx` - https://developer.salesforce.com/tools/sfdxcli
+
+`node` - https://nodejs.org/en/download/
+
+early releases are published for testing so can install with npm per usual
 
 ```bash
   npm i -g meta-mouse
 ```
 
-then run metamouse 
+then run `metamouse` 
 
 
 ```bash
   metamouse
 ```
 
+You'll be greeted with options which you can use arrows or fuzzy search to select 🐭
 
-<img src="https://i.imgur.com/qTi2EbG.png">
+<img src="https://i.imgur.com/zbWesEr.png">
 
 ### Working
 
 - refresh list of usernames from sfdx & cache list
+- fuzzy search cached usernames & other options
 - select username to set current & cache username
 - open org in browser (use saved/cached username)
 - add username to sfdx

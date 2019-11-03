@@ -321,7 +321,10 @@ function addUser (url){
 
         command.stdout.pipe(process.stdout)
         command.stderr.pipe(process.stderr)
-        command.on('exit', resolve)
+        command.on('exit', () => {
+            console.dir( '\n' )
+            resolve(true)
+        })
     })
 }
 

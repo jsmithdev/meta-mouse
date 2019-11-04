@@ -21,7 +21,8 @@
     "inquirer-autocomplete-prompt": "^1.0.1",
     "ora": "^4.0.2",
     "shell-path": "^2.1.0",
-    "unzip": "^0.1.11"
+    "unzip": "^0.1.11",
+    "xml2js": "^0.4.22"
   },
   "bin": {
     "metamouse": "./bin/cli.js"

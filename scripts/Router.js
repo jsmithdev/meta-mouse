@@ -108,12 +108,12 @@ async function main(app){
         await SFDX.openInBrowser(username)
 
         console.log(`\n opened in browser 🐭 \n`)
-
+        
     }
     /* EXIT */
     else if(answer.task === 'Quit'){
         
-        return console.log(`\n later 🐭 \n`)
+        return Utility.exit()
     }
     /* TESTING */
     else if(answer.task === 'Test'){}

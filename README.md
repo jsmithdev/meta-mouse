@@ -9,14 +9,15 @@
 
 `node` - https://nodejs.org/en/download/
 
-early releases are published for testing so can install with npm per usual
+Early releases are published for testing so can install with npm as normal
+
+📌 Note the dash in the early npm name that is not in the command
 
 ```bash
   npm i -g meta-mouse
 ```
 
-then run `metamouse` 
-
+With it installed, you can run `metamouse` anywhere/time you need
 
 ```bash
   metamouse
@@ -24,16 +25,16 @@ then run `metamouse`
 
 You'll be greeted with options which you can use arrows or fuzzy search to select 🐭
 
-<img src="https://i.imgur.com/zbWesEr.png">
+<img src="https://i.imgur.com/Va2qmMc.png">
 
 ### Working
 
-- refresh list of usernames from sfdx & cache list
-- fuzzy search cached usernames & other options
-- select username to set current & cache username
-- open org in browser (use saved/cached username)
-- add username to sfdx
-- some success w/ validation count
+- fuzzy search cached usernames & options
+- select username to set current username & cache it
+- refresh list of usernames from sfdx & cache list for quicker switching
+- open org in browser (uses selected/cached username)
+- quickly add usernames to sfdx
+- had dev org success w/validation count
 
 WIP below / disregard for now
 ---

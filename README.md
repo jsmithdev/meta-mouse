@@ -2,7 +2,6 @@
 
 ## Work in progress salesforce cli tool
 
-
 ### Requirements
 
 `sfdx` - https://developer.salesforce.com/tools/sfdxcli
@@ -11,44 +10,31 @@
 
 Early releases are published for testing so can install with npm as normal
 
-📌 Note the dash in the early npm name that is not in the command
+📌 Note the dash in the early npm name that is not in the command atm
 
 ```bash
   npm i -g meta-mouse
 ```
 
-With it installed, you can run `metamouse` anywhere/time you need
+If installed with -g like above, you can run `metamouse` anywhere
 
 ```bash
   metamouse
 ```
 
-You'll be greeted with options which you can use arrows or fuzzy search to select 🐭
+You'll be greeted with options; Use arrows or fuzzy search to navigate
 
 <img src="https://i.imgur.com/Va2qmMc.png">
 
-### Working
+### Things it does
 
 - fuzzy search cached usernames & options
-- select username to set current username & cache it
+- select username to set & cache current username  it
 - refresh list of usernames from sfdx & cache list for quicker switching
 - open org in browser (uses selected/cached username)
 - quickly add usernames to sfdx
-- had dev org success w/validation count
+- Validation Rule count
 
-WIP below / disregard for now
----
+### WIP / disregard for now
 
-### Path
-
-  - / -- root
-
-    - /packages/ - where to put package.xml files
-
-    - /data/ - Structure for deploying, pulls, solution templates, etc
-      - /raw/ -- where retrieve pulls zips to
-      - /all/ -- where raw is unzipped to
-      - /stage/ -- where fails go to know whats left, what to try again later, etc
-      - /deploy/ -- where deploy deploys from
-
-  - [worksheet.txt](worksheet.txt) -- where to put common problems that arise during deployments to find commonalities
+- [worksheet.txt](worksheet.txt) -- where to put common problems that arise during deployments to find commonalities

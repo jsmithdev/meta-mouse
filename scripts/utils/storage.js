@@ -3,7 +3,6 @@ const fs = require('fs')
 const util = require('util')
 const path = require('path')
 
-const unzip = require('unzip')
 const mkdir = util.promisify(fs.mkdir)
 
 const ora = require('ora')
@@ -12,10 +11,10 @@ module.exports = {
     unzip_package
 }
 
+const DecompressZip = require('decompress-zip');
 
-const getPackagesDir = s => {
-    const d = s
-    return path.normalize( d.replace('unpackaged.zip', '') )
+const getPackagesDir = string => {
+    return path.normalize( string.replace('unpackaged.zip', '') )
 }
 
 /**
@@ -27,42 +26,52 @@ const getPackagesDir = s => {
  */
 async function unzip_package(zip_path){
 
-    const spinner = ora(`Decompressing package @ ${zip_path}...`).start()
+    return new Promise((resolve, reject) => {
+        try {
 
-    return new Promise(resolve => {
+            const details = {}
 
-        const unzip_path = getPackagesDir(zip_path)
+            const spinner = ora().start(`Decompressing package @ ${zip_path}...`)
 
-        const dirs = []
+            const unzip_path = getPackagesDir(zip_path)
+
+            const unzip = new DecompressZip(zip_path)
         
-        fs.createReadStream(zip_path)
-        .pipe(unzip.Parse())
-        .on('entry', async function (entry) {
-            
-            const fileName = entry.path;
-            const type = entry.type; // 'Directory' or 'File'
-            //const size = entry.size;
+            unzip.on('error', error => {
+                spinner.warn('Caught an error')
+                reject(error)
+            });
+        
+            unzip.on('extract', log => {
 
-            if (type === 'File' && fileName !== 'package.xml') {
+                spinner.succeed(`Finished decompression of ${details.fileCount} files`)
 
-                const path = unzip_path + entry.path.replace('unpackaged/', '')
-                const dir = path.substring(0, path.lastIndexOf('/'))
-
-                mkdir(dir, () => {
-                    
-                    if(!dirs.includes(dir)){ dirs.push(dir) }
-
-                    entry.pipe(fs.createWriteStream( path ))
-                })
-            }
-            else {
-                entry.autodrain()
-            }
-        })
-        .on('close', () => {
-            spinner.succeed(`Decompressed package to ${zip_path}`)
-            resolve(dirs)
-        })
+                const results = log
+                    .map(o => `${unzip_path}${Object.values(o)[0]}`)
+                    .filter(name => {
+                        
+                        return name.includes('.')
+                            && !name.includes('.zip')
+                            && !name.includes('.xml')
+                    })
+                
+                resolve(results)
+            });
+        
+            unzip.on('progress', (fileIndex, fileCount) => {
+                details.fileCount = fileCount
+                spinner.text = 'Extracted file ' + (fileIndex + 1) + ' of ' + fileCount
+            });
+        
+            unzip.extract({
+                path: unzip_path,
+                //filter: function (file) {
+                //    return file.type !== "SymbolicLink";
+                //}
+            });
+        }
+        catch (error) {
+            reject(error)
+        }
     })
 }
-

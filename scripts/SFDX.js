@@ -60,7 +60,7 @@ async function getUsers () {
     return usernames
 }
 
-async function describeMeta () {
+async function describeMeta (username) {
 
     const { stdout, stderr } = await exec(`sfdx force:mdapi:describemetadata -u ${username} --json `)
 
@@ -176,67 +176,55 @@ async function validationRuleCount(username, type){
         .filter(loc => loc.directories.to.includes('package_objects'))
         .map(loc => `${loc.directories.to}/unpackaged.zip`)
 
-    const paths = (await Promise.all( zip_paths.map(unzip_package) ))
-        .reduce((acc, curr) => [...acc, ...curr], [])
-    
+    const temp_paths = []
+    //(await Promise.all( .map(unzip_package) ))
+    //    .reduce((acc, curr) => [...acc, ...curr], [])
+    // Using for to do sequentially 
+    for(const index in zip_paths){
+        temp_paths.push( await unzip_package( zip_paths[index] ) )
+    }
+
+    const file_paths = temp_paths.reduce((acc, curr) => [...acc, ...curr], [])
 
     const spinner = ora('Parsing metadata files for rules...').start()
 
-    const locations = await Promise.all( paths.map(async dir => {
-
-        const contents = await readdir(dir)
-        
-        return {
-            directory: dir,
-            contents: contents.filter(name => {
-                return name.includes('.')
-                    && !name.includes('.zip')
-                    && !name.includes('.xml')
-            }),
-        }
-    }));
-
-    const file_paths = locations.reduce((acc, location) => {
-        return [...acc, ...location.contents.map(file => `${location.directory}/${file}`)]
-    }, []);
-
+    //const file_paths = locations.reduce((acc, location) => {
+    //    return [...acc, ...location.contents.map(file => `${location.directory}/${file}`)]
+    //}, []);
     
 
     const promises = file_paths.map(file_path => {
 
-        return new Promise(resolve => fs.readFile(file_path, (err, data) => {
-            
-            const parser = new xml2js.Parser()
-
-            parser.parseString( data, (err, result) => {
-
-                if(err){  return resolve(0) }
-
-                if(!result){  return resolve(0) }
-
-                const data = JSON.parse(JSON.stringify(result))
-
-                if(!data || !data.CustomObject || !data.CustomObject.validationRules){
-                    return resolve(0)
-                }
+            return new Promise(resolve => fs.readFile(file_path, (err, data) => {
                 
-                return resolve(data.CustomObject.validationRules.length)
-            })
-        }))
-    })
+                const parser = new xml2js.Parser()
+
+                parser.parseString( data, (err, result) => {
+
+                    if(err){  return resolve(0) }
+
+                    if(!result){  return resolve(0) }
+
+                    const data = JSON.parse(JSON.stringify(result))
+
+                    if(!data || !data.CustomObject || !data.CustomObject.validationRules){
+                        return resolve(0)
+                    }
+                    
+                    return resolve(data.CustomObject.validationRules.length)
+                })
+            }))
+        })
+
+    spinner.succeed( `Parsed ${file_paths.length} object files`)
 
     const count_array = await Promise.all(promises)
 
     const count = count_array.reduce((acc, n) => acc + n, 0)
 
-    const file_count = locations.map(l => l.contents.length).reduce((acc, n) => acc + n, 0)
-
-    spinner.succeed( `Parsed ${file_count} object files `)
-
-
     const response = count === 0
         ? `No validation rules found. If it's not a new org, open an issue https://github.com/jsmithdev/meta-mouse/issues  🐭 `
-        : `${count} validation rule${count > 1 ? 's' : ''} found in ${file_count} objects  🐭 `
+        : `${count} validation rule${count > 1 ? 's' : ''} found in ${file_paths.length} objects  🐭 `
 
     return response
 }
@@ -289,6 +277,40 @@ function mdapi_retrieve (username, xml_path, dest){
         const cmd = `sfdx force:mdapi:retrieve -k ${package_path} -u ${username} -r ${dest} -w 10 --json `
         
         const command = exec_normal(cmd)
+
+        //command.stdout.pipe(process.stdout)
+        //command.stderr.pipe(process.stderr)
+        command.on('exit', (code) => {
+
+            resolve({
+                code, 
+                directories: {
+                    from: package_path, 
+                    to: dest
+                }
+            })
+        })
+    })
+}
+
+/**
+ * @description sfdx mdapi retrieve 
+ * 
+ * @params {String} username
+ * @params {String} xml_path
+ * @params {String} dest
+ * 
+ * @returns {Stream} stream
+ */
+function mdapi_retrieve__stream (username, xml_path, dest){
+
+    return new Promise(resolve => {
+        
+        const package_path = path.normalize(`${__dirname}/../packages/${xml_path}`)
+
+        const cmd = `sfdx force:mdapi:retrieve -k ${package_path} -u ${username} -r ${dest} -w 10 --json `
+        
+        return exec_normal(cmd)
 
         //command.stdout.pipe(process.stdout)
         //command.stderr.pipe(process.stderr)

@@ -14,10 +14,16 @@ module.exports = {
     ],
 
     objects: [
-        '<- Go Back',
+        '<- Cancel',
         'Standard Objects',
         'Custom Objects',
         'All Objects'
+    ],
+
+    org_types: [
+        '<- Cancel',
+        'Test Org', 
+        'Dev or Org'
     ],
 
 }

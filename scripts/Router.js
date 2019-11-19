@@ -7,7 +7,6 @@ const Utility = require('./Utility')
 
 
 module.exports = {
-
     init,
     main,
 }
@@ -15,7 +14,7 @@ module.exports = {
 
 async function init(app){
 
-    Utility.art()
+    Utility.art.intro()
 
     main(app)
 }
@@ -35,34 +34,27 @@ async function main(app){
     }
     /* SET USER */
     else if(answer.task === 'Select Username'){
-
-        const check = users => Utility.checks.usernames( users )
         
-        if(!check(app.get('usernames'))){
-            console.log(` \n no users found, i'll update sfdx username list cache... 🐭 `)        
+        if( !Utility.checks.usernames( app.get('usernames') ) ){
+            console.log(` I'll refresh the cache, one moment... \n`)        
             const usernames = await SFDX.getUsers()
             app.set('usernames', usernames)
         }
         
-        const usernames = ['<- Go Back', ...app.get('usernames')]
+        const usernames = ['<- Cancel', ...app.get('usernames')]
 
-        if(usernames.length === 1){ console.log(`Still no users to choose from. Consider adding some to SFDX  🐭 `)}
+        if(usernames.length === 1){
+            console.log(`Still no users to choose from. Consider adding some using me or sfdx `)
+            return main(app)
+        }
         
+        const answer = await inquirer.prompt( Utility.questions.select_username( usernames ) )
 
-        const answer = await inquirer.prompt([{
-            name: 'username',
-            message: 'Select username 🐭 ',
-            type: 'autocomplete',
-            pageSize: 10,
-            source: (answers, input) => Utility.search(answers, input, usernames)
-        }])
-
-
-        if(answer.username.includes('Go Back')){ return main(app) }
+        if( Utility.checks.goBack( answer.username ) ) { return main( app ) }
 
         app.set('username', answer.username)
 
-        console.log(` \n username ${answer.username} set & cached 🐭 \n`)
+        console.log(` \n username ${answer.username} set & cached \n`)
 
     }
     /* GET USERNAMES */
@@ -79,14 +71,9 @@ async function main(app){
     /* ADD USER */
     else if(answer.task === 'Add Username'){
 
-        const question = [{
-            choices: ['Test Org', 'Prod or Dev Org'],
-            name: 'url',
-            message: `What type of org do you want to add 🐭 `,
-            type: 'list'
-        }]
+        const answer = await inquirer.prompt( Utility.questions.org_types )
 
-        const answer = await inquirer.prompt(question)
+        if( Utility.checks.goBack( answer.url ) ) { return main( app ) }
 
         const url = answer.url.includes('Test') ? 'https://test.salesforce.com' : 'https://login.salesforce.com'
         
@@ -96,7 +83,6 @@ async function main(app){
     else if(answer.task === 'Validation Rule Count'){
 
         await validationRuleCount(app)
-            
     }
     /* OPEN ORG */
     else if(answer.task === 'Open in Browser'){
@@ -107,13 +93,13 @@ async function main(app){
 
         await SFDX.openInBrowser(username)
 
-        console.log(`\n opened in browser 🐭 \n`)
+        console.log(`\n Opened in browser \n`)
         
     }
     /* EXIT */
     else if(answer.task === 'Quit'){
         
-        return Utility.exit()
+        return Utility.art.outro()
     }
     /* TESTING */
     else if(answer.task === 'Test'){}
@@ -129,7 +115,9 @@ async function validationRuleCount(app){
 
     const answer = await inquirer.prompt( Utility.questions.objects )
     
-    if(answer.type === '<- Go Back'){ return main(app) }
+    if(answer.type === '<- Cancel'){ 
+        return main(app) 
+    }
 
     const type = answer.type
         .substring(0, answer.type.indexOf(' '))
@@ -143,8 +131,8 @@ async function validationRuleCount(app){
 }
 
 function noUsername(app){
-    console.log('Please pick a username first 🐭 ')
-    main(app)
-    return
+    
+    console.log('Please select a username first')
+    return main(app)
 }
 

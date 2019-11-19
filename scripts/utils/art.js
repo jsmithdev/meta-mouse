@@ -1,6 +1,6 @@
-module.exports = { art, exit }
+module.exports = { intro, outro, icon }
 
-function art(){
+function intro(){
     console.log(`
 
     Meta    ()(),~~,.
@@ -11,9 +11,19 @@ function art(){
     `)
 }
 
+function icon(){
+    return "^ᴥ^"
+}
+/*
+'^•ᴥ•^'
+'"߮ﺒ"߮'
+'^ﺒ^'
+'^ᴥ^'
+'^ᴥ^'
+'ꬆꬃ'
+*/
 
-
-function exit(){
+function outro(){
     console.log(`
             ( later )
     __QQ  .*  

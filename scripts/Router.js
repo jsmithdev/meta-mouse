@@ -19,8 +19,6 @@ async function init(app){
     main(app)
 }
 
-
-
 async function main(app){
 
     const answer = await inquirer.prompt( Utility.questions.main )
@@ -32,6 +30,7 @@ async function main(app){
 
         console.log( `\n I have ${username} cached as selected 🐭 \n `)
     }
+
     /* SET USER */
     else if(answer.task === 'Select Username'){
         
@@ -57,6 +56,7 @@ async function main(app){
         console.log(` \n username ${answer.username} set & cached \n`)
 
     }
+
     /* GET USERNAMES */
     else if(answer.task === 'Refresh Usernames'){
         
@@ -68,6 +68,7 @@ async function main(app){
             console.log(`\n No usernames returned from sfdx. Please use 'Add a User' 🐭 \n`)
         }
     }
+
     /* ADD USER */
     else if(answer.task === 'Add Username'){
 
@@ -79,11 +80,40 @@ async function main(app){
         
         await SFDX.addUser(url)
     }
+
     /* RULE COUNT */
     else if(answer.task === 'Validation Rule Count'){
 
-        await validationRuleCount(app)
+        const username = app.get('username')
+
+        if(!username){ noUsername(app) }
+    
+        const answer = await inquirer.prompt( Utility.questions.objects )
+        
+        if(answer.type === '<- Cancel'){ 
+            return main(app) 
+        }
+    
+        const type = answer.type
+            .substring(0, answer.type.indexOf(' '))
+            .toLowerCase()
+    
+        const response = await Utility.validationRuleCount(username, type)
+    
+        console.log(`\n ${response} \n`)
+
     }
+
+    /* Create Sheet */
+    else if(answer.task === 'Generate Object Sheet'){
+        
+        const username = app.get('username')
+
+        if(!username){ noUsername(app) }
+
+        await Utility.generateSheet(username)
+    }
+
     /* OPEN ORG */
     else if(answer.task === 'Open in Browser'){
 
@@ -96,43 +126,22 @@ async function main(app){
         console.log(`\n Opened in browser \n`)
         
     }
+
     /* EXIT */
     else if(answer.task === 'Quit'){
         
         return Utility.art.outro()
     }
+
     /* TESTING */
     else if(answer.task === 'Test'){}
 
     main(app)
 }
 
-async function validationRuleCount(app){
-
-    const username = app.get('username')
-
-    if(!username){ noUsername(app) }
-
-    const answer = await inquirer.prompt( Utility.questions.objects )
-    
-    if(answer.type === '<- Cancel'){ 
-        return main(app) 
-    }
-
-    const type = answer.type
-        .substring(0, answer.type.indexOf(' '))
-        .toLowerCase()
-
-    const response = await SFDX.validationRuleCount(username, type)
-
-    console.log(`\n ${response} \n`)
-    
-    return response
-}
 
 function noUsername(app){
     
     console.log('Please select a username first')
     return main(app)
 }
-

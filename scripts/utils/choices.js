@@ -7,6 +7,7 @@ module.exports = {
         'Refresh Usernames', 
         'Open in Browser',
         'Validation Rule Count',
+        'Generate Object Sheet',
         'Quit',
         //'Set FROM org', 
         //'Set to ORG', 

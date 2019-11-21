@@ -1,3 +1,4 @@
+process.env.HOME_DIR = require('os').homedir()
 
 const Store = require('data-store')
 const Router = require('./scripts/Router.js')

@@ -4,14 +4,17 @@ const choices = require('./utils/choices')
 const questions = require('./utils/questions')
 
 const { search } = require('./utils/util')
-const { unzip_package } = require('./utils/storage')
+const { validationRuleCount } = require('./utils/validationRuleCount')
+const { generateSheet } = require('./utils/sheets')
 const art = require('./utils/art')
 
+
 module.exports = {
+    art,
     checks,
+    search,
     choices,
     questions,
-    unzip_package,
-    search,
-    art,
+    generateSheet,
+    validationRuleCount,
 }

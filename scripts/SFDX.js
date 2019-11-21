@@ -1,4 +1,3 @@
-'use strict()'
 
 const fs = require('fs')
 const util = require('util')
@@ -15,20 +14,16 @@ const exec = util.promisify(exec_normal)
 
 const ora = require('ora')
 
-const xml2js = require('xml2js')
-
-const { unzip_package } = require('./Utility')
-
 
 module.exports = {
     addUser,
     getUsers,
     describeMeta,
     openInBrowser,
-    validationRuleCount,
+    retrievePackages,
 }
 
-function ensure_directories() {
+{   // ensure paths exist once 
 
     const base = path.normalize(`${__dirname}/../tmp`)
 
@@ -43,7 +38,6 @@ function ensure_directories() {
 
     dirs.forEach( dir => mkdir( path.normalize(dir), () => {} ))
 }
-ensure_directories()
 
 async function getUsers () {
 
@@ -83,47 +77,6 @@ async function openInBrowser (username) {
 }
 
 
-async function getValidationCount (username, type) {
-
-    try {
-        
-        const list = await getObjectList(username, type)
-
-        console.log(`have ${list.result.length} objects in a list`)
-
-        const base = `${__dirname}/../tmp/descriptions/objects`
-
-        await mkdir(`${base}/${username}`)
-
-        console.log(list)
-        
-        Array.from(list.result).forEach(async object => {
-
-            const path = `${base}/${username}/${object}.json`
-
-            const description = await descObject(username, object)
-            
-            const data = JSON.parse(description)
-
-            await writeFile(path, JSON.stringify(data, null, 4))
-        })
-        
-        console.log(`wrote ${list.result.length} files under ${base}...`)
-        
-        return undefined
-    }
-    catch (error) {
-        console.error(error)
-        return undefined
-    }
-}
-
-
-
-
-
-
-
 
 async function getObjectList (username, type) {
 
@@ -155,78 +108,6 @@ async function descObject (username, object) {
         console.log(error)
         return undefined
     }
-}
-
-async function validationRuleCount(username, type){
-
-    const dest = path.normalize(`${__dirname}/../tmp/retrieved/${username}`)
-
-    mkdir( dest, () => {} )
-
-    const packages = type === 'custom'
-        ? ['package_objects_custom.xml']
-        : type === 'standard'
-            ? ['package_objects_std.xml']
-            : ['package_objects_custom.xml', 'package_objects_std.xml']
-
-    
-    const retrieves = await retrievePackages(username, packages)
-
-    const zip_paths = retrieves
-        .filter(loc => loc.directories.to.includes('package_objects'))
-        .map(loc => `${loc.directories.to}/unpackaged.zip`)
-
-    const temp_paths = []
-    //(await Promise.all( .map(unzip_package) ))
-    //    .reduce((acc, curr) => [...acc, ...curr], [])
-    // Using for to do sequentially 
-    for(const index in zip_paths){
-        temp_paths.push( await unzip_package( zip_paths[index] ) )
-    }
-
-    const file_paths = temp_paths.reduce((acc, curr) => [...acc, ...curr], [])
-
-    const spinner = ora('Parsing metadata files for rules...').start()
-
-    //const file_paths = locations.reduce((acc, location) => {
-    //    return [...acc, ...location.contents.map(file => `${location.directory}/${file}`)]
-    //}, []);
-    
-
-    const promises = file_paths.map(file_path => {
-
-            return new Promise(resolve => fs.readFile(file_path, (err, data) => {
-                
-                const parser = new xml2js.Parser()
-
-                parser.parseString( data, (err, result) => {
-
-                    if(err){  return resolve(0) }
-
-                    if(!result){  return resolve(0) }
-
-                    const data = JSON.parse(JSON.stringify(result))
-
-                    if(!data || !data.CustomObject || !data.CustomObject.validationRules){
-                        return resolve(0)
-                    }
-                    
-                    return resolve(data.CustomObject.validationRules.length)
-                })
-            }))
-        })
-
-    spinner.succeed( `Parsed ${file_paths.length} object files`)
-
-    const count_array = await Promise.all(promises)
-
-    const count = count_array.reduce((acc, n) => acc + n, 0)
-
-    const response = count === 0
-        ? `No validation rules found. If it's not a new org, open an issue https://github.com/jsmithdev/meta-mouse/issues  🐭 `
-        : `${count} validation rule${count > 1 ? 's' : ''} found in ${file_paths.length} objects  🐭 `
-
-    return response
 }
 
 
@@ -293,39 +174,6 @@ function mdapi_retrieve (username, xml_path, dest){
     })
 }
 
-/**
- * @description sfdx mdapi retrieve 
- * 
- * @params {String} username
- * @params {String} xml_path
- * @params {String} dest
- * 
- * @returns {Stream} stream
- */
-function mdapi_retrieve__stream (username, xml_path, dest){
-
-    return new Promise(resolve => {
-        
-        const package_path = path.normalize(`${__dirname}/../packages/${xml_path}`)
-
-        const cmd = `sfdx force:mdapi:retrieve -k ${package_path} -u ${username} -r ${dest} -w 10 --json `
-        
-        return exec_normal(cmd)
-
-        //command.stdout.pipe(process.stdout)
-        //command.stderr.pipe(process.stderr)
-        command.on('exit', (code) => {
-
-            resolve({
-                code, 
-                directories: {
-                    from: package_path, 
-                    to: dest
-                }
-            })
-        })
-    })
-}
 
 
 /**

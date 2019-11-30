@@ -10,7 +10,7 @@ If not already installed, install
 ### Installing
 
 ```bash
-  npm i -g metamouse
+  npm i -g meta-mouse
 ```
 
 If installed with -g like above, you can run `metamouse` anywhere

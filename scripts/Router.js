@@ -28,7 +28,9 @@ async function main(app){
         
         const username = app.get('username')
 
-        console.log( `\n I have ${username} cached as selected 🐭 \n `)
+        username 
+            ? console.log( `\n I have ${username} cached as selected 🐭 \n `)
+            : console.log( `\n I have no username cached 🐭 \n `)
     }
 
     /* SET USER */

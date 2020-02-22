@@ -20,10 +20,10 @@
     "fuzzy": "^0.1.3",
     "highland": "^2.13.5",
     "inquirer": "^6.5.2",
-    "inquirer-autocomplete-prompt": "^1.0.1",
-    "ora": "^4.0.2",
+    "inquirer-autocomplete-prompt": "^1.0.2",
+    "ora": "^4.0.3",
     "shell-path": "^2.1.0",
-    "xml2js": "^0.4.22"
+    "xml2js": "^0.4.23"
   },
   "bin": {
     "metamouse": "./bin/cli.js"

@@ -1,6 +1,6 @@
 {
   "name": "meta-mouse",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "WIP CLI tool for Salesforce metadata",
   "main": "index.js",
   "repository": {
